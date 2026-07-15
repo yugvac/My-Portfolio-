@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yug Vachhani | Cybersecurity Portfolio</title>
+<meta name="description" content="Yug Vachhani — Cybersecurity Enthusiast, Penetration Tester, Web Application Security">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Icons: inline SVG sprite hydrated via JS (see script) — no external icon font dependency -->
+
+<style>
+/* ============================================================
+   ROOT VARIABLES — Design tokens
+   ============================================================ */
+:root{
+  --bg-void:#03050a;
+  --bg-panel:#070b14;
+  --cyan:#00f7ff;
+  --green:#39ff14;
+  --purple:#8b5cf6;
+  --purple-deep:#5b21b6;
+  --text-main:#d7e6f2;
+  --text-dim:#7d94a8;
+  --glass-border:rgba(0,247,255,0.18);
+  --glass-bg:rgba(10,18,32,0.55);
+  --font-display:'Orbitron',sans-serif;
+  --font-body:'Rajdhani',sans-serif;
+  --font-mono:'Fira Code',monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg-void);
+  color:var(--text-main);
+  font-family:var(--font-body);
+  overflow-x:hidden;
+  position:relative;
+  line-height:1.6;
+}
+
+::selection{background:var(--cyan);color:#000;}
+
+/* Inline SVG icon sizing (replaces Font Awesome <i> sizing) */
+.icon-svg{
+  width:1em;height:1em;
+  display:inline-block;
+  vertical-align:-0.15em;
+  flex-shrink:0;
+}
+.btn .icon-svg{width:0.95em;height:0.95em;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:9px;}
+::-webkit-scrollbar-track{background:var(--bg-void);}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--cyan),var(--purple));border-radius:10px;}
+
+/* ============================================================
+   BACKGROUND LAYERS — stars, particles, network, binary, orbs
+   ============================================================ */
+#bg-canvas-wrap{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(139,92,246,0.10), transparent 55%),
+    radial-gradient(ellipse at 80% 30%, rgba(0,247,255,0.08), transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(57,255,20,0.05), transparent 50%),
+    var(--bg-void);
+}
+canvas{display:block;position:absolute;inset:0;}
+
+#binary-rain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.10;overflow:hidden;}
+.binary-col{
+  position:absolute;
+  top:-100%;
+  font-family:var(--font-mono);
+  font-size:14px;
+  color:var(--green);
+  white-space:nowrap;
+  line-height:1.4;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  to{transform:translateY(200vh);}
+}
+
+/* Mouse glow */
+#mouse-glow{
+  position:fixed;
+  width:420px;height:420px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:1;
+  background:radial-gradient(circle, rgba(0,247,255,0.06), transparent 70%);
+  transform:translate(-50%,-50%);
+  transition:opacity .3s;
+  will-change:transform;
+}
+
+/* Content sits above background */
+.content-layer{position:relative;z-index:2;}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+.section{
+  padding:130px 6vw;
+  max-width:1300px;
+  margin:0 auto;
+  position:relative;
+}
+.eyebrow{
+  font-family:var(--font-mono);
+  color:var(--green);
+  letter-spacing:4px;
+  text-transform:uppercase;
+  font-size:0.78rem;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+}
+.eyebrow::before{
+  content:'';
+  width:28px;height:1px;
+  background:var(--green);
+  box-shadow:0 0 8px var(--green);
+}
+.section-title{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:clamp(1.9rem,4.2vw,3rem);
+  margin-bottom:50px;
+  letter-spacing:1px;
+  background:linear-gradient(90deg,var(--cyan) 0%,var(--purple) 50%,var(--green) 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:gradientShift 6s ease infinite;
+  display:inline-block;
+}
+@keyframes gradientShift{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+/* Reveal on scroll */
+.reveal{
+  opacity:0;
+  transform:translateY(40px);
+  transition:opacity .8s cubic-bezier(.16,.84,.44,1), transform .8s cubic-bezier(.16,.84,.44,1);
+}
+.reveal.in-view{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:.08s;}
+.reveal-delay-2{transition-delay:.16s;}
+.reveal-delay-3{transition-delay:.24s;}
+.reveal-delay-4{transition-delay:.32s;}
+
+/* Glass card base */
+.glass{
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  border-radius:14px;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  position:relative;
+}
+.glass::before{
+  content:'';
+  position:absolute;inset:0;
+  border-radius:14px;
+  padding:1px;
+  background:linear-gradient(135deg, rgba(0,247,255,0.35), rgba(139,92,246,0.15), rgba(57,255,20,0.2));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .4s;
+}
+.glass:hover::before{opacity:1;}
+.glass:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,247,255,0.12), 0 0 0 1px rgba(0,247,255,0.1);
+}
+.glass{transition:transform .4s ease, box-shadow .4s ease;}
+
+/* Buttons */
+.btn{
+  font-family:var(--font-mono);
+  font-size:0.9rem;
+  letter-spacing:1px;
+  padding:14px 30px;
+  border-radius:6px;
+  border:1px solid var(--cyan);
+  background:transparent;
+  color:var(--cyan);
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  position:relative;
+  overflow:hidden;
+  transition:color .35s ease, box-shadow .35s ease, transform .2s ease;
+  z-index:1;
+}
+.btn::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .35s ease;
+  z-index:-1;
+}
+.btn:hover{
+  color:#00131a;
+  box-shadow:0 0 25px rgba(0,247,255,0.5);
+  transform:translateY(-2px);
+}
+.btn:hover::before{transform:scaleX(1);}
+.btn-solid{
+  background:linear-gradient(90deg,var(--cyan),#00b8c4);
+  color:#001217;
+  border:1px solid transparent;
+  font-weight:600;
+}
+.btn-solid::before{background:linear-gradient(90deg,var(--purple),var(--green));}
+.btn-solid:hover{color:#000;}
+.btn-ghost{border-color:var(--purple);color:var(--purple);}
+.btn-ghost::before{background:linear-gradient(90deg,var(--purple),var(--cyan));}
+.btn-ghost:hover{box-shadow:0 0 25px rgba(139,92,246,0.5);}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+header#navbar{
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:100;
+  padding:18px 6vw;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgba(3,5,10,0.55);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(0,247,255,0.08);
+  transition:padding .3s ease, background .3s ease;
+}
+.logo{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:1.15rem;
+  color:var(--text-main);
+  letter-spacing:1px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.logo span{color:var(--cyan);}
+.logo .prompt{
+  font-family:var(--font-mono);
+  color:var(--green);
+  font-size:1rem;
+}
+nav.nav-links{
+  display:flex;
+  gap:34px;
+  list-style:none;
+}
+nav.nav-links a{
+  color:var(--text-dim);
+  text-decoration:none;
+  font-family:var(--font-mono);
+  font-size:0.82rem;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  position:relative;
+  padding-bottom:4px;
+  transition:color .25s;
+}
+nav.nav-links a::after{
+  content:'';
+  position:absolute;
+  left:0;bottom:0;
+  width:0;height:1px;
+  background:var(--cyan);
+  box-shadow:0 0 6px var(--cyan);
+  transition:width .3s;
+}
+nav.nav-links a:hover{color:var(--cyan);}
+nav.nav-links a:hover::after{width:100%;}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+#hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:140px 6vw 80px;
+  position:relative;
+}
+.hero-tag{
+  font-family:var(--font-mono);
+  color:var(--green);
+  border:1px solid rgba(57,255,20,0.35);
+  padding:7px 18px;
+  border-radius:30px;
+  font-size:0.8rem;
+  letter-spacing:2px;
+  margin-bottom:28px;
+  background:rgba(57,255,20,0.05);
+  box-shadow:0 0 20px rgba(57,255,20,0.08);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+.hero-tag .dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation:pulse 1.6s infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1;}
+  50%{opacity:.3;}
+}
+.hero-name{
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(2.6rem,8vw,5.2rem);
+  letter-spacing:2px;
+  line-height:1.05;
+  background:linear-gradient(100deg,#ffffff 10%, var(--cyan) 45%, var(--purple) 70%, var(--green) 100%);
+  background-size:250% auto;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:gradientShift 7s ease infinite;
+  text-shadow:0 0 60px rgba(0,247,255,0.15);
+  margin-bottom:22px;
+}
+.hero-type-wrap{
+  font-family:var(--font-mono);
+  font-size:clamp(1.05rem,2.4vw,1.5rem);
+  color:var(--text-main);
+  min-height:2.4em;
+  margin-bottom:36px;
+}
+#typedText{color:var(--cyan);}
+.cursor-blink{
+  display:inline-block;
+  width:2px;
+  background:var(--cyan);
+  margin-left:4px;
+  animation:blink 0.9s steps(1) infinite;
+}
+@keyframes blink{50%{opacity:0;}}
+
+.hero-btns{
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-bottom:60px;
+}
+
+.scroll-indicator{
+  position:absolute;
+  bottom:26px;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:var(--font-mono);
+  font-size:0.72rem;
+  color:var(--text-dim);
+  letter-spacing:3px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+}
+.scroll-indicator .line{
+  width:1px;height:36px;
+  background:linear-gradient(var(--cyan),transparent);
+  animation:scrollLine 1.8s infinite;
+}
+@keyframes scrollLine{
+  0%{transform:scaleY(0);transform-origin:top;}
+  50%{transform:scaleY(1);transform-origin:top;}
+  50.1%{transform-origin:bottom;}
+  100%{transform:scaleY(0);transform-origin:bottom;}
+}
+
+/* Terminal window styling reused across sections */
+.terminal{
+  font-family:var(--font-mono);
+  background:rgba(6,10,18,0.75);
+  border:1px solid var(--glass-border);
+  border-radius:10px;
+  overflow:hidden;
+  text-align:left;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.terminal-bar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 14px;
+  background:rgba(0,247,255,0.05);
+  border-bottom:1px solid var(--glass-border);
+}
+.terminal-bar span{width:11px;height:11px;border-radius:50%;display:inline-block;}
+.dot-red{background:#ff5f56;}
+.dot-yellow{background:#ffbd2e;}
+.dot-green{background:#27c93f;}
+.terminal-title{
+  margin-left:10px;
+  color:var(--text-dim);
+  font-size:0.75rem;
+}
+.terminal-body{padding:18px 20px;font-size:0.88rem;color:var(--green);}
+.terminal-body .muted{color:var(--text-dim);}
+.terminal-body .path{color:var(--cyan);}
+
+/* ============================================================
+   ABOUT
+   ============================================================ */
+.about-grid{
+  display:grid;
+  grid-template-columns:1.15fr 1fr;
+  gap:34px;
+  align-items:stretch;
+}
+.edu-block{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin-top:30px;
+  padding-top:26px;
+  border-top:1px solid rgba(0,247,255,0.12);
+}
+.edu-icon{
+  width:52px;height:52px;
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;
+  color:var(--cyan);
+  background:rgba(0,247,255,0.07);
+  border:1px solid rgba(0,247,255,0.25);
+  box-shadow:0 0 18px rgba(0,247,255,0.15);
+  flex-shrink:0;
+}
+.edu-degree{font-family:var(--font-display);font-size:1rem;color:var(--text-main);font-weight:700;margin-bottom:4px;}
+.edu-uni{color:var(--text-dim);font-family:var(--font-mono);font-size:0.85rem;}
+
+/* ============================================================
+   SKILLS
+   ============================================================ */
+.skills-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+.skill-card{
+  padding:22px 24px;
+}
+.skill-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+.skill-name{
+  font-family:var(--font-body);
+  font-weight:600;
+  font-size:1rem;
+  color:var(--text-main);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.skill-name .icon-svg{color:var(--cyan);font-size:0.95rem;}
+.skill-pct{font-family:var(--font-mono);color:var(--green);font-size:0.85rem;}
+.skill-bar-track{
+  width:100%;height:7px;
+  border-radius:4px;
+  background:rgba(255,255,255,0.06);
+  overflow:hidden;
+  position:relative;
+}
+.skill-bar-fill{
+  height:100%;
+  width:0%;
+  border-radius:4px;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  box-shadow:0 0 10px rgba(0,247,255,0.6);
+  transition:width 1.4s cubic-bezier(.16,.84,.44,1);
+}
+
+/* ============================================================
+   TIMELINE
+   ============================================================ */
+.timeline{position:relative;padding-left:0;}
+.timeline-spine{
+  position:absolute;
+  left:25px;top:0;bottom:0;
+  width:2px;
+  background:linear-gradient(var(--cyan),var(--purple),var(--green));
+  opacity:0.35;
+}
+.timeline-item{
+  position:relative;
+  padding-left:70px;
+  margin-bottom:26px;
+}
+.timeline-node{
+  position:absolute;
+  left:9px;top:6px;
+  width:32px;height:32px;
+  border-radius:50%;
+  background:var(--bg-panel);
+  border:2px solid var(--green);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--green);
+  font-size:0.8rem;
+  box-shadow:0 0 16px rgba(57,255,20,0.45);
+  z-index:1;
+}
+.timeline-card{padding:20px 24px;}
+.timeline-card h3{
+  font-family:var(--font-display);
+  font-size:1rem;
+  color:var(--text-main);
+  margin-bottom:8px;
+  letter-spacing:0.3px;
+}
+.timeline-card p{color:var(--text-dim);font-size:0.95rem;}
+
+/* ============================================================
+   CERTIFICATIONS
+   ============================================================ */
+.cert-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+}
+.cert-card{padding:28px;position:relative;overflow:hidden;}
+.cert-ribbon{
+  width:50px;height:50px;
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;
+  color:#00131a;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  box-shadow:0 0 22px rgba(0,247,255,0.35);
+  margin-bottom:18px;
+}
+.cert-card h3{font-family:var(--font-display);font-size:1.05rem;margin-bottom:10px;color:var(--text-main);}
+.cert-card p{color:var(--text-dim);font-size:0.92rem;margin-bottom:16px;}
+.cert-issuer{
+  font-family:var(--font-mono);
+  font-size:0.78rem;
+  color:var(--green);
+  letter-spacing:0.5px;
+}
+
+/* ============================================================
+   PROJECTS
+   ============================================================ */
+.projects-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:26px;
+}
+.projects-grid-single{
+  grid-template-columns:1fr;
+  max-width:620px;
+}
+.project-card{padding:30px;}
+.project-head{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:20px;
+}
+.project-icon{
+  font-size:1.5rem;
+  color:var(--purple);
+  width:52px;height:52px;
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(139,92,246,0.1);
+  border:1px solid rgba(139,92,246,0.3);
+  box-shadow:0 0 20px rgba(139,92,246,0.2);
+}
+.project-tag{
+  font-family:var(--font-mono);
+  font-size:0.75rem;
+  color:var(--cyan);
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.project-card h3{font-family:var(--font-display);font-size:1.2rem;margin-bottom:12px;color:var(--text-main);}
+.project-card p{color:var(--text-dim);font-size:0.96rem;margin-bottom:20px;}
+.project-stack{display:flex;flex-wrap:wrap;gap:8px;}
+.project-stack span{
+  font-family:var(--font-mono);
+  font-size:0.72rem;
+  padding:5px 12px;
+  border-radius:20px;
+  border:1px solid rgba(57,255,20,0.35);
+  color:var(--green);
+  background:rgba(57,255,20,0.05);
+}
+
+/* ============================================================
+   TOOLS
+   ============================================================ */
+.tools-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:18px;
+}
+.tool-badge{
+  padding:24px 12px;
+  text-align:center;
+  cursor:default;
+}
+.tool-badge [data-icon]{
+  font-size:1.9rem;
+  color:var(--cyan);
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:color .3s, transform .3s;
+}
+.tool-badge:hover [data-icon]{color:var(--green);transform:scale(1.15);}
+.tool-badge span{
+  font-family:var(--font-mono);
+  font-size:0.78rem;
+  color:var(--text-dim);
+  letter-spacing:0.5px;
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:22px;
+}
+.stat-card{
+  padding:38px 20px;
+  text-align:center;
+}
+.stat-number{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:clamp(2.2rem,4vw,3rem);
+  background:linear-gradient(90deg,var(--cyan),var(--green));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  margin-bottom:10px;
+  text-shadow:0 0 30px rgba(0,247,255,0.2);
+}
+.stat-label{
+  font-family:var(--font-mono);
+  color:var(--text-dim);
+  font-size:0.82rem;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+/* ============================================================
+   CONTACT
+   ============================================================ */
+.contact-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+}
+.contact-card{
+  padding:28px 22px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  text-decoration:none;
+  color:var(--text-main);
+}
+.contact-card [data-icon]{
+  font-size:1.7rem;
+  color:var(--cyan);
+  width:48px;
+  flex-shrink:0;
+  text-align:center;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.contact-card h3{font-family:var(--font-display);font-size:0.95rem;margin-bottom:4px;}
+.contact-card p{color:var(--text-dim);font-size:0.82rem;font-family:var(--font-mono);word-break:break-word;}
+.contact-card:hover i{color:var(--green);}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+#siteFooter{
+  position:relative;
+  z-index:2;
+  border-top:1px solid rgba(0,247,255,0.1);
+  padding:50px 6vw 34px;
+  text-align:center;
+  background:linear-gradient(to bottom, transparent, rgba(0,247,255,0.02));
+}
+.footer-logo{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:1.1rem;
+  letter-spacing:1px;
+  margin-bottom:10px;
+}
+.footer-logo span{color:var(--cyan);}
+.footer-logo .prompt{color:var(--green);font-family:var(--font-mono);}
+.footer-tagline{
+  font-family:var(--font-mono);
+  color:var(--purple);
+  letter-spacing:3px;
+  font-size:0.9rem;
+  margin-bottom:22px;
+  text-transform:uppercase;
+}
+.footer-bottom{
+  font-family:var(--font-mono);
+  font-size:0.75rem;
+  color:var(--text-dim);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1024px){
+  .skills-grid{grid-template-columns:repeat(2,1fr);}
+  .tools-grid{grid-template-columns:repeat(4,1fr);}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .contact-grid{grid-template-columns:repeat(2,1fr);}
+  .about-grid{grid-template-columns:1fr;}
+  .cert-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:768px){
+  header#navbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:14px;
+    padding:16px 5vw !important;
+  }
+  nav.nav-links{
+    width:100%;
+    gap:18px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding-bottom:2px;
+  }
+  nav.nav-links::-webkit-scrollbar{display:none;}
+  nav.nav-links a{white-space:nowrap;flex-shrink:0;}
+  .section{padding:90px 6vw;}
+  .projects-grid{grid-template-columns:1fr;}
+  .cert-grid{grid-template-columns:1fr;}
+  .skills-grid{grid-template-columns:1fr;}
+  .tools-grid{grid-template-columns:repeat(3,1fr);}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .contact-grid{grid-template-columns:1fr;}
+}
+@media (max-width:480px){
+  .tools-grid{grid-template-columns:repeat(2,1fr);}
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= BACKGROUND LAYERS ================= -->
+<div id="bg-canvas-wrap">
+  <canvas id="starsCanvas"></canvas>
+  <canvas id="networkCanvas"></canvas>
+  <canvas id="orbsCanvas"></canvas>
+</div>
+<div id="binary-rain"></div>
+<div id="mouse-glow"></div>
+
+<!-- ================= NAVBAR ================= -->
+<header id="navbar">
+  <div class="logo"><span class="prompt">&gt;_</span> YUG<span>.</span>VACHHANI</div>
+  <nav class="nav-links" id="navLinks">
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#experience">Experience</a>
+    <a href="#certifications">Certs</a>
+    <a href="#projects">Projects</a>
+    <a href="#tools">Tools</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<div class="content-layer">
+
+<!-- ================= HERO ================= -->
+<section id="hero">
+  <div class="hero-tag reveal in-view"><span class="dot"></span> AVAILABLE FOR OPPORTUNITIES</div>
+  <h1 class="hero-name reveal in-view">YUG VACHHANI</h1>
+  <div class="hero-type-wrap reveal in-view">
+    <span class="muted-prefix" style="color:var(--text-dim);">root@yug:~$</span> <span id="typedText"></span><span class="cursor-blink">&nbsp;</span>
+  </div>
+
+  <div class="scroll-indicator"><span>SCROLL</span><span class="line"></span></div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section id="about" class="section">
+  <div class="eyebrow reveal">WHOAMI</div>
+  <h2 class="section-title reveal">About Me</h2>
+
+  <div class="about-grid">
+    <div class="glass about-text reveal reveal-delay-1" style="padding:34px;">
+      <p style="font-size:1.08rem;color:var(--text-main);">I am a passionate cybersecurity enthusiast focused on offensive security and penetration testing. I have developed strong practical skills through extensive hands-on labs and real-world simulations. I enjoy identifying vulnerabilities, understanding attack techniques, and continuously improving my security knowledge.</p>
+
+      <div class="edu-block">
+        <div class="edu-icon"><span data-icon="cap"></span></div>
+        <div>
+          <div class="edu-degree">Bachelor of Computer Applications (BCA)</div>
+          <div class="edu-uni">Marwadi University</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="terminal reveal reveal-delay-2">
+      <div class="terminal-bar">
+        <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+        <span class="terminal-title">whoami.sh</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="path">yug@security</span><span class="muted">:~$</span> cat profile.txt</div>
+        <div style="margin-top:10px;line-height:1.9;">
+          <div><span class="muted">name</span>&nbsp;&nbsp;&nbsp;: Yug Vachhani</div>
+          <div><span class="muted">role</span>&nbsp;&nbsp;&nbsp;: Aspiring Penetration Tester</div>
+          <div><span class="muted">focus</span>&nbsp;&nbsp;: Web App Security / AD / Offensive Sec</div>
+          <div><span class="muted">status</span>&nbsp;: <span style="color:var(--green);">Actively learning &amp; hacking</span></div>
+        </div>
+        <div style="margin-top:14px;"><span class="path">yug@security</span><span class="muted">:~$</span> <span class="cursor-blink" style="background:var(--green);">&nbsp;</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SKILLS ================= -->
+<section id="skills" class="section">
+  <div class="eyebrow reveal">TECHNICAL ARSENAL</div>
+  <h2 class="section-title reveal">Skills</h2>
+  <div class="skills-grid" id="skillsGrid"><!-- populated by JS --></div>
+</section>
+
+<!-- ================= EXPERIENCE ================= -->
+<section id="experience" class="section">
+  <div class="eyebrow reveal">FIELD LOG</div>
+  <h2 class="section-title reveal">Experience &amp; Achievements</h2>
+
+  <div class="timeline" id="timelineWrap">
+    <div class="timeline-spine"></div>
+    <div class="timeline-item reveal">
+      <div class="timeline-node"><span data-icon="check"></span></div>
+      <div class="glass timeline-card">
+        <h3>Completed 250+ TryHackMe Rooms</h3>
+        <p>Sustained hands-on practice across offensive security domains, reaching Legend rank in the top 1%.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal reveal-delay-1">
+      <div class="timeline-node"><span data-icon="check"></span></div>
+      <div class="glass timeline-card">
+        <h3>Solved the Complete TJ Null Learning Path</h3>
+        <p>Worked through the full OSCP-style curated box list, sharpening enumeration and exploitation methodology.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal reveal-delay-2">
+      <div class="timeline-node"><span data-icon="check"></span></div>
+      <div class="glass timeline-card">
+        <h3>Practical Offensive Security Labs</h3>
+        <p>Applied real-world attack simulations in isolated environments to build a repeatable testing methodology.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal reveal-delay-3">
+      <div class="timeline-node"><span data-icon="check"></span></div>
+      <div class="glass timeline-card">
+        <h3>Hands-on Enumeration</h3>
+        <p>Deep experience mapping attack surfaces using Nmap, Gobuster, and manual reconnaissance techniques.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal reveal-delay-4">
+      <div class="timeline-node"><span data-icon="check"></span></div>
+      <div class="glass timeline-card">
+        <h3>Web Exploitation</h3>
+        <p>Practical exploitation of OWASP Top 10 vulnerabilities including SQLi, XSS, and authentication flaws.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-node"><span data-icon="check"></span></div>
+      <div class="glass timeline-card">
+        <h3>Privilege Escalation</h3>
+        <p>Consistent success chaining low-privilege footholds into full system compromise across Linux and Windows.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CERTIFICATIONS ================= -->
+<section id="certifications" class="section">
+  <div class="eyebrow reveal">VERIFIED CREDENTIALS</div>
+  <h2 class="section-title reveal">Certifications</h2>
+
+  <div class="cert-grid">
+    <div class="glass cert-card reveal">
+      <div class="cert-ribbon"><span data-icon="certificate"></span></div>
+      <h3>Cisco Networking Basics</h3>
+      <p>Foundational networking concepts — TCP/IP, subnetting, routing &amp; switching fundamentals.</p>
+      <span class="cert-issuer">Cisco Networking Academy</span>
+    </div>
+    <div class="glass cert-card reveal reveal-delay-1">
+      <div class="cert-ribbon"><span data-icon="shield"></span></div>
+      <h3>Jr Penetration Tester</h3>
+      <p>Core penetration testing methodology, reconnaissance, exploitation, and reporting fundamentals.</p>
+      <span class="cert-issuer">TryHackMe</span>
+    </div>
+    <div class="glass cert-card reveal reveal-delay-2">
+      <div class="cert-ribbon"><span data-icon="bug"></span></div>
+      <h3>Web Application Pentester</h3>
+      <p>Practical web exploitation skills across the OWASP Top 10 and real-world attack scenarios.</p>
+      <span class="cert-issuer">TryHackMe</span>
+    </div>
+    <div class="glass cert-card reveal reveal-delay-3">
+      <div class="cert-ribbon"><span data-icon="award"></span></div>
+      <h3>Security 101</h3>
+      <p>Introductory offensive security concepts covering core tooling, terminology, and methodology.</p>
+      <span class="cert-issuer">TryHackMe</span>
+    </div>
+    <div class="glass cert-card reveal">
+      <div class="cert-ribbon"><span data-icon="globe"></span></div>
+      <h3>Web Fundamentals</h3>
+      <p>Foundational web technologies and how they map to common attack surfaces and vulnerabilities.</p>
+      <span class="cert-issuer">TryHackMe</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROJECTS ================= -->
+<section id="projects" class="section">
+  <div class="eyebrow reveal">BUILD LOG</div>
+  <h2 class="section-title reveal">Projects</h2>
+
+  <div class="projects-grid projects-grid-single">
+    <div class="glass project-card reveal">
+      <div class="project-head">
+        <span class="project-icon" data-icon="ai"></span>
+        <span class="project-tag">Automation · Recon</span>
+      </div>
+      <h3>AI Assisted Penetration Testing</h3>
+      <p>Developed an AI-assisted workflow to automate reconnaissance, vulnerability analysis, and reporting for ethical penetration testing.</p>
+      <div class="project-stack">
+        <span>Python</span><span>AI/LLM</span><span>Nmap</span><span>Reporting</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TOOLS ================= -->
+<section id="tools" class="section">
+  <div class="eyebrow reveal">LOADOUT</div>
+  <h2 class="section-title reveal">Tools</h2>
+  <div class="tools-grid" id="toolsGrid"><!-- populated by JS --></div>
+</section>
+
+<!-- ================= STATS ================= -->
+<section id="stats" class="section">
+  <div class="stats-grid">
+    <div class="glass stat-card reveal">
+      <div class="stat-number" data-target="250" data-suffix="+">0</div>
+      <div class="stat-label">TryHackMe Rooms</div>
+    </div>
+    <div class="glass stat-card reveal reveal-delay-1">
+      <div class="stat-number" data-target="100" data-suffix="%">0</div>
+      <div class="stat-label">TJ Null List Completed</div>
+    </div>
+    <div class="glass stat-card reveal reveal-delay-2">
+      <div class="stat-number" data-target="15" data-suffix="+">0</div>
+      <div class="stat-label">Cybersecurity Skills</div>
+    </div>
+    <div class="glass stat-card reveal reveal-delay-3">
+      <div class="stat-number" data-target="4" data-suffix="+">0</div>
+      <div class="stat-label">Professional Certifications</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact" class="section">
+  <div class="eyebrow reveal">ESTABLISH CONNECTION</div>
+  <h2 class="section-title reveal">Contact</h2>
+
+  <div class="contact-grid">
+    <a href="mailto:yugvachhani240@gmail.com" class="glass contact-card reveal">
+      <span data-icon="mail"></span>
+      <div><h3>Email</h3><p>yugvachhani240@gmail.com</p></div>
+    </a>
+    <a href="https://www.linkedin.com/in/yug-vachhani-6aa186357?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener" class="glass contact-card reveal reveal-delay-1">
+      <span data-icon="linkedin"></span>
+      <div><h3>LinkedIn</h3><p>/in/yug-vachhani</p></div>
+    </a>
+    <a href="https://github.com/yugvac" target="_blank" rel="noopener" class="glass contact-card reveal reveal-delay-2">
+      <span data-icon="github"></span>
+      <div><h3>GitHub</h3><p>@yugvac</p></div>
+    </a>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer id="siteFooter">
+  <div class="footer-inner">
+    <div class="footer-logo"><span class="prompt">&gt;_</span> YUG<span>.</span>VACHHANI</div>
+    <div class="footer-tagline">Learning. Hacking. Securing.</div>
+    <div class="footer-bottom">© <span id="yearNow"></span> Yug Vachhani — Built with HTML, CSS &amp; JavaScript</div>
+  </div>
+</footer>
+
+</div><!-- /content-layer -->
+
+<script>
+/* =========================================================================
+   YUG VACHHANI — CYBERSECURITY PORTFOLIO
+   Pure vanilla JS. No frameworks. Sections:
+   1. Starfield canvas       4. Mouse glow          7. Skills render + bars
+   2. Network lines canvas   5. Typing effect        8. Stat counters
+   3. Floating orbs canvas   6. Scroll reveal        9. Nav + misc
+   ========================================================================= */
+
+document.getElementById('yearNow').textContent = new Date().getFullYear();
+
+/* =========================================================================
+   ICON SYSTEM — inline SVG (no external icon-font dependency, always renders)
+   ========================================================================= */
+const ICONS = {
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>',
+  folder: '<path d="M4 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z"/>',
+  download: '<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
+  radar: '<circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 0 1 10 10M12 6a6 6 0 0 1 6 6M12 2v4M2 12h4"/>',
+  cap: '<path d="M2 9l10-5 10 5-10 5-10-5z"/><path d="M6 11v5c0 1.3 2.7 3 6 3s6-1.7 6-3v-5"/>',
+  check: '<path d="M5 12l5 5L19 8"/>',
+  certificate: '<circle cx="12" cy="8" r="5"/><path d="M8.5 12.5L7 21l5-2.5L17 21l-1.5-8.5"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/>',
+  bug: '<path d="M9 8V6a3 3 0 0 1 6 0v2M5 12h14M6 8l-2-2M18 8l2-2M6 16l-2 2M18 16l2 2M8 8h8a4 4 0 0 1 4 4v2a6 6 0 0 1-12 0v-2a4 4 0 0 1 4-4z"/>',
+  award: '<circle cx="12" cy="8" r="5"/><path d="M9 12.5L7 21l5-2.5L17 21l-2-8.5"/>',
+  ai: '<rect x="5" y="7" width="14" height="11" rx="2"/><path d="M9 7V4h6v3M9 12h.01M15 12h.01M8 21h8"/>',
+  mask: '<path d="M4 9c0-3 3.5-5 8-5s8 2 8 5-3 8-8 8-8-5-8-8z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  linkedin: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7M7 7v.01M11 17v-4.5a2 2 0 0 1 4 0V17M11 12.5V17"/>',
+  github: '<path d="M12 2a10 10 0 0 0-3.16 19.5c.5.1.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.3 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/>',
+  terminal: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/>',
+  target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>',
+  network: '<circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M6.5 7.5L11 16M17.5 7.5L13 16M7 6h10"/>',
+  server: '<rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01"/>',
+  linux: '<circle cx="12" cy="8" r="4"/><path d="M8 11c-1.5 2-2.5 5-2.5 7.5S8 22 12 22s4.5-1 4.5-3.5S13.5 13 12 11"/><circle cx="10" cy="7" r="0.6" fill="currentColor"/><circle cx="14" cy="7" r="0.6" fill="currentColor"/>',
+  windows: '<path d="M3 6l8-1.2V11H3V6zM12 4.6L21 3v8H12V4.6zM3 13h8v6.2L3 18v-5zM12 13h9v8l-9-1.4V13z"/>',
+  python: '<path d="M12 3c-3 0-4 1.3-4 3v2h4M12 3c3 0 4 1.3 4 3v2h-4M8 8H5.5A2.5 2.5 0 0 0 3 10.5v3A2.5 2.5 0 0 0 5.5 16H8M16 8h2.5A2.5 2.5 0 0 1 21 10.5v3a2.5 2.5 0 0 1-2.5 2.5H16M8 16v2c0 1.7 1 3 4 3s4-1.3 4-3v-2H8z"/><circle cx="9.5" cy="5.5" r="0.6" fill="currentColor"/><circle cx="14.5" cy="18.5" r="0.6" fill="currentColor"/>',
+  crosshair: '<circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
+  wave: '<path d="M2 12h3l2-7 3 14 3-10 2 3h5"/>',
+  search: '<circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/>',
+  database: '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/>',
+  'trend-up': '<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>',
+  'list-check': '<path d="M4 6l1.5 1.5L8 5M4 12l1.5 1.5L8 11M4 18l1.5 1.5L8 17M11 6h9M11 12h9M11 18h9"/>',
+  git: '<circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M6 8v8M8 6h4a4 4 0 0 1 4 4v.5"/>',
+  docker: '<path d="M3 13h18c0 4-3 7-9 7s-9-3-9-7z"/><path d="M5 13V10h3v3M9 13V10h3v3M13 13V10h3v3M9 9V6h3v3"/>',
+  code: '<path d="M9 8l-5 4 5 4M15 8l5 4-5 4M13 5l-2 14"/>'
+};
+function renderIcon(name){
+  const path = ICONS[name];
+  if(!path) return '';
+  return `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
+}
+function hydrateIcons(root){
+  (root||document).querySelectorAll('[data-icon]').forEach(el=>{
+    el.innerHTML = renderIcon(el.getAttribute('data-icon'));
+  });
+}
+hydrateIcons();
+
+/* -------------------------------------------------------------------------
+   1. STARFIELD  — twinkling stars + occasional shooting stars
+   ------------------------------------------------------------------------- */
+(function starfield(){
+  const canvas = document.getElementById('starsCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, stars = [], shootingStars = [];
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight * 3.2; // cover long scroll page with parallax
+  }
+  function initStars(){
+    stars = [];
+    const count = Math.floor((w*h)/9000);
+    for(let i=0;i<count;i++){
+      stars.push({
+        x:Math.random()*w,
+        y:Math.random()*h,
+        r:Math.random()*1.4+0.3,
+        baseAlpha:Math.random()*0.6+0.3,
+        twinkleSpeed:Math.random()*0.02+0.005,
+        phase:Math.random()*Math.PI*2,
+        color: Math.random() < 0.15 ? '57,255,20' : (Math.random()<0.3 ? '139,92,246' : '0,247,255')
+      });
+    }
+  }
+  function maybeSpawnShootingStar(){
+    if(Math.random() < 0.006 && shootingStars.length < 3){
+      const startX = Math.random()*w*0.6;
+      const startY = Math.random()*h*0.4;
+      shootingStars.push({x:startX,y:startY,len:Math.random()*120+80,speed:Math.random()*8+10,angle:Math.PI/4,life:1});
+    }
+  }
+  let scrollOffset = 0;
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    const t = Date.now()*0.001;
+    for(const s of stars){
+      const alpha = s.baseAlpha + Math.sin(t*s.twinkleSpeed*10 + s.phase)*0.25;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${s.color},${Math.max(0,Math.min(1,alpha))})`;
+      ctx.fill();
+    }
+    maybeSpawnShootingStar();
+    shootingStars.forEach((sh,i)=>{
+      ctx.beginPath();
+      const grad = ctx.createLinearGradient(sh.x,sh.y, sh.x - sh.len*Math.cos(sh.angle), sh.y - sh.len*Math.sin(sh.angle));
+      grad.addColorStop(0,'rgba(255,255,255,0.9)');
+      grad.addColorStop(1,'rgba(0,247,255,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 2;
+      ctx.moveTo(sh.x, sh.y);
+      ctx.lineTo(sh.x - sh.len*Math.cos(sh.angle), sh.y - sh.len*Math.sin(sh.angle));
+      ctx.stroke();
+      sh.x += sh.speed*Math.cos(sh.angle);
+      sh.y += sh.speed*Math.sin(sh.angle);
+      sh.life -= 0.012;
+      if(sh.life<=0 || sh.x>w+150 || sh.y>h+150) shootingStars.splice(i,1);
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', ()=>{ resize(); initStars(); });
+  resize(); initStars(); draw();
+
+  // Simple parallax: shift canvas vertical translate on scroll
+  window.addEventListener('scroll', ()=>{
+    scrollOffset = window.scrollY;
+    canvas.style.transform = `translateY(${-scrollOffset*0.15}px)`;
+  }, {passive:true});
+})();
+
+/* -------------------------------------------------------------------------
+   2. NETWORK LINES — connected nodes drifting slowly (cyber network feel)
+   ------------------------------------------------------------------------- */
+(function networkLines(){
+  const canvas = document.getElementById('networkCanvas');
+  const ctx = canvas.getContext('2d');
+  let w,h, nodes=[];
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    canvas.style.position='fixed';
+  }
+  function initNodes(){
+    nodes = [];
+    const count = Math.min(60, Math.floor((w*h)/28000));
+    for(let i=0;i<count;i++){
+      nodes.push({
+        x:Math.random()*w, y:Math.random()*h,
+        vx:(Math.random()-0.5)*0.25, vy:(Math.random()-0.5)*0.25
+      });
+    }
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(const n of nodes){
+      n.x += n.vx; n.y += n.vy;
+      if(n.x<0||n.x>w) n.vx*=-1;
+      if(n.y<0||n.y>h) n.vy*=-1;
+    }
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const dx = nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist<130){
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(0,247,255,${(1-dist/130)*0.12})`;
+          ctx.lineWidth=1;
+          ctx.moveTo(nodes[i].x,nodes[i].y);
+          ctx.lineTo(nodes[j].x,nodes[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    for(const n of nodes){
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,1.6,0,Math.PI*2);
+      ctx.fillStyle='rgba(0,247,255,0.35)';
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', ()=>{ resize(); initNodes(); });
+  resize(); initNodes(); draw();
+})();
+
+/* -------------------------------------------------------------------------
+   3. FLOATING GLOWING ORBS
+   ------------------------------------------------------------------------- */
+(function orbs(){
+  const canvas = document.getElementById('orbsCanvas');
+  const ctx = canvas.getContext('2d');
+  let w,h, orbList=[];
+  function resize(){ w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; canvas.style.position='fixed';}
+  function init(){
+    orbList = [
+      {x:w*0.15,y:h*0.2,r:180,color:'0,247,255',vx:0.06,vy:0.04},
+      {x:w*0.85,y:h*0.6,r:220,color:'139,92,246',vx:-0.05,vy:0.05},
+      {x:w*0.5,y:h*0.85,r:150,color:'57,255,20',vx:0.04,vy:-0.03},
+    ];
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(const o of orbList){
+      o.x+=o.vx; o.y+=o.vy;
+      if(o.x<-o.r||o.x>w+o.r) o.vx*=-1;
+      if(o.y<-o.r||o.y>h+o.r) o.vy*=-1;
+      const g = ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);
+      g.addColorStop(0, `rgba(${o.color},0.10)`);
+      g.addColorStop(1, `rgba(${o.color},0)`);
+      ctx.fillStyle=g;
+      ctx.beginPath();
+      ctx.arc(o.x,o.y,o.r,0,Math.PI*2);
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', ()=>{ resize(); init(); });
+  resize(); init(); draw();
+})();
+
+/* -------------------------------------------------------------------------
+   BINARY RAIN — CSS-driven columns of 0/1 characters
+   ------------------------------------------------------------------------- */
+(function binaryRain(){
+  const wrap = document.getElementById('binary-rain');
+  const colCount = Math.floor(window.innerWidth / 26);
+  for(let i=0;i<colCount;i++){
+    const col = document.createElement('div');
+    col.className='binary-col';
+    col.style.left = (i*26)+'px';
+    col.style.animationDuration = (Math.random()*10+12)+'s';
+    col.style.animationDelay = (Math.random()*-20)+'s';
+    let str='';
+    const lines = 40;
+    for(let j=0;j<lines;j++){ str += (Math.random()>0.5?'1':'0') + '<br>'; }
+    col.innerHTML = str;
+    wrap.appendChild(col);
+  }
+})();
+
+/* -------------------------------------------------------------------------
+   4. MOUSE GLOW
+   ------------------------------------------------------------------------- */
+(function mouseGlow(){
+  const glow = document.getElementById('mouse-glow');
+  let mx=window.innerWidth/2, my=window.innerHeight/2, cx=mx, cy=my;
+  window.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; });
+  function anim(){
+    cx += (mx-cx)*0.12;
+    cy += (my-cy)*0.12;
+    glow.style.transform = `translate(${cx}px,${cy}px) translate(-50%,-50%)`;
+    requestAnimationFrame(anim);
+  }
+  anim();
+})();
+
+/* -------------------------------------------------------------------------
+   5. TYPING EFFECT — hero role rotation
+   ------------------------------------------------------------------------- */
+(function typingEffect(){
+  const el = document.getElementById('typedText');
+  const phrases = [
+    'Cybersecurity Enthusiast',
+    'Penetration Tester',
+    'Web Application Security'
+  ];
+  let pIndex=0, charIndex=0, deleting=false;
+
+  function tick(){
+    const current = phrases[pIndex];
+    if(!deleting){
+      charIndex++;
+      el.textContent = current.slice(0,charIndex);
+      if(charIndex === current.length){
+        deleting = true;
+        setTimeout(tick, 1600);
+        return;
+      }
+    } else {
+      charIndex--;
+      el.textContent = current.slice(0,charIndex);
+      if(charIndex === 0){
+        deleting = false;
+        pIndex = (pIndex+1) % phrases.length;
+      }
+    }
+    setTimeout(tick, deleting ? 35 : 70);
+  }
+  tick();
+})();
+
+/* -------------------------------------------------------------------------
+   6. SCROLL REVEAL
+   ------------------------------------------------------------------------- */
+(function scrollReveal(){
+  const items = document.querySelectorAll('.reveal:not(.in-view)');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.15, rootMargin:'0px 0px -60px 0px'});
+  items.forEach(item=>io.observe(item));
+})();
+
+/* -------------------------------------------------------------------------
+   7. SKILLS — render cards + animate progress bars on reveal
+   ------------------------------------------------------------------------- */
+(function renderSkills(){
+  const skills = [
+    {name:'Penetration Testing', level:90, icon:'target'},
+    {name:'Web Security', level:88, icon:'globe'},
+    {name:'Network Security', level:82, icon:'network'},
+    {name:'Linux', level:90, icon:'linux'},
+    {name:'Windows', level:78, icon:'windows'},
+    {name:'Bash', level:80, icon:'terminal'},
+    {name:'Burp Suite', level:87, icon:'bug'},
+    {name:'Nmap', level:90, icon:'radar'},
+    {name:'Metasploit', level:80, icon:'crosshair'},
+    {name:'Wireshark', level:78, icon:'wave'},
+    {name:'Gobuster', level:85, icon:'search'},
+    {name:'SQLMap', level:83, icon:'database'},
+    {name:'OWASP Top 10', level:88, icon:'shield'},
+    {name:'Privilege Escalation', level:84, icon:'trend-up'},
+    {name:'Enumeration', level:89, icon:'list-check'},
+    {name:'Vulnerability Assessment', level:86, icon:'radar'}
+  ];
+
+  const grid = document.getElementById('skillsGrid');
+  skills.forEach((s, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'glass skill-card reveal' + (idx % 4 ? ` reveal-delay-${(idx%4)}` : '');
+    card.innerHTML = `
+      <div class="skill-top">
+        <div class="skill-name">${renderIcon(s.icon)}${s.name}</div>
+        <div class="skill-pct">${s.level}%</div>
+      </div>
+      <div class="skill-bar-track">
+        <div class="skill-bar-fill" data-level="${s.level}"></div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Observe skill cards to trigger bar fill + reveal simultaneously
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        const fill = entry.target.querySelector('.skill-bar-fill');
+        if(fill){
+          requestAnimationFrame(()=>{
+            fill.style.width = fill.dataset.level + '%';
+          });
+        }
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.2, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.skill-card').forEach(c=>io.observe(c));
+})();
+
+/* -------------------------------------------------------------------------
+   TOOLS — render badge grid
+   ------------------------------------------------------------------------- */
+(function renderTools(){
+  const tools = [
+    {name:'Kali Linux', icon:'linux'},
+    {name:'Burp Suite', icon:'bug'},
+    {name:'Nmap', icon:'radar'},
+    {name:'Metasploit', icon:'crosshair'},
+    {name:'Wireshark', icon:'wave'},
+    {name:'Git', icon:'git'},
+    {name:'Docker', icon:'docker'},
+    {name:'Linux', icon:'linux'},
+    {name:'Windows', icon:'windows'},
+    {name:'VS Code', icon:'code'}
+  ];
+  const grid = document.getElementById('toolsGrid');
+  tools.forEach((t, idx)=>{
+    const badge = document.createElement('div');
+    badge.className = 'glass tool-badge reveal' + (idx % 4 ? ` reveal-delay-${(idx%4)}` : '');
+    badge.innerHTML = `${renderIcon(t.icon)}<span>${t.name}</span>`;
+    grid.appendChild(badge);
+  });
+  // observe newly added
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){ entry.target.classList.add('in-view'); io.unobserve(entry.target); }
+    });
+  }, {threshold:0.15});
+  document.querySelectorAll('.tool-badge').forEach(b=>io.observe(b));
+})();
+
+/* -------------------------------------------------------------------------
+   8. STAT COUNTERS
+   ------------------------------------------------------------------------- */
+(function statCounters(){
+  const nums = document.querySelectorAll('.stat-number');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const el = entry.target;
+        const target = parseInt(el.dataset.target, 10);
+        const suffix = el.dataset.suffix || '';
+        const duration = 1600;
+        const startTime = performance.now();
+        function update(now){
+          const progress = Math.min((now-startTime)/duration, 1);
+          const eased = 1 - Math.pow(1-progress, 3);
+          el.textContent = Math.floor(eased*target) + suffix;
+          if(progress<1) requestAnimationFrame(update);
+          else el.textContent = target + suffix;
+        }
+        requestAnimationFrame(update);
+        io.unobserve(el);
+      }
+    });
+  }, {threshold:0.4});
+  nums.forEach(n=>io.observe(n));
+})();
+
+/* -------------------------------------------------------------------------
+   9. NAV — active-link on scroll, navbar shrink
+   ------------------------------------------------------------------------- */
+(function navBehavior(){
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', ()=>{
+    if(window.scrollY > 40){
+      navbar.style.padding = '10px 6vw';
+      navbar.style.background = 'rgba(3,5,10,0.85)';
+    } else {
+      navbar.style.padding = '18px 6vw';
+      navbar.style.background = 'rgba(3,5,10,0.55)';
+    }
+  }, {passive:true});
+})();
+</script>
+</body>
+</html>
